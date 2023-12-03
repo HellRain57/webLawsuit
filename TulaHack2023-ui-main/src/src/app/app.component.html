@@ -1,0 +1,325 @@
+<header>
+  <h1>Сервис формирования исковых заявлений</h1>
+</header>
+
+<div class="widgets-section">
+
+  <div class="widget files-widget">
+    <div class="dropzone" appDrag (files)="filesDropped($event)">
+      <h3>Вы можете загрузить сюда файлы договора, претензии и расчёта, чтобы заполнить все поля автоматически</h3>
+    </div>
+    <div *ngIf="files.length" class="fileszone">
+      <div class="fileszone-title">
+        <h2>Загруженные файлы</h2>
+        <button class="btn-clear-files" style="height: 20px" matTooltip="Очистить все документы" (click)="clearFiles()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+      <hr>
+      <div class="fileszone-files">
+        <ng-container *ngFor="let fileHandle of files">
+          <div class="files-item"> 
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <img style="height: 30px; width: 30px" [src]="fileIconPath(fileHandle)" />
+              {{ fileHandle.file.name }}
+              <p style="color: gray; margin: 0px;">({{ fileSize(fileHandle.file.size) }})</p>
+            </div>
+            <button class="btn-clear-files" matTooltip="Удалить документ" (click)="clearFile(fileHandle)">
+              <mat-icon> clear </mat-icon>
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: center; margin-top: 20px; height: 40px">    
+      <button *ngIf="files.length" mat-flat-button color="primary" (click)="uploadFiles()">
+        Сформировать поля <mat-icon iconPositionEnd> chevron_right_icon </mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="widget fields-widget"> 
+    <fieldset>
+      <legend> <h2>Истец</h2> </legend>
+      <div *ngIf="lawsuit.plantiff">
+        <mat-form-field>
+          <mat-label>ИНН</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.INN">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>ОГРН</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.OGRN">
+        </mat-form-field>
+        <mat-form-field style="flex: 1">
+          <mat-label>Адрес</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.address">
+        </mat-form-field>
+      </div>
+      <div *ngIf="lawsuit.plantiff">
+        <mat-form-field>
+          <mat-label>КПП</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.KPP">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Расчетный счет</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.paymentAccount">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Кор. счет</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.correspondentAccount">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Банк получателя</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.bank">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>БИК</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.BIC">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>ОКТМО</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.OKTMO">
+        </mat-form-field>
+      </div>
+      <div *ngIf="lawsuit.plantiff">
+        <mat-form-field style="flex: 1">
+          <mat-label>Представитель</mat-label>
+          <input matInput [(ngModel)]="lawsuit.plantiff.representative">
+        </mat-form-field>
+      </div>
+  </fieldset>
+
+  
+  <fieldset>
+    <legend> 
+      <h2>Ответчик</h2> 
+    </legend>
+    <div>
+      <mat-radio-group style="margin-top: -10px; margin-bottom: 10px">
+        <mat-radio-button value="phys" style="margin-right: 16px;" color="primary" [checked]="true" (change)="changeDefendentType($event)">Физическое лицо</mat-radio-button>
+        <mat-radio-button value="ur" color="primary" (change)="changeDefendentType($event)">Юридическое лицо</mat-radio-button>
+      </mat-radio-group>      
+    </div>
+    <div *ngIf="lawsuit.defendant">
+      <mat-form-field style="flex: 1" *ngIf="isDefendantPhys">
+        <mat-label>ФИО</mat-label>
+        <input matInput [(ngModel)]="lawsuit.defendant.FIO">
+      </mat-form-field>
+      <mat-form-field style="flex: 1" *ngIf="!isDefendantPhys">
+        <mat-label>Название</mat-label>
+        <input matInput [(ngModel)]="lawsuit.defendant.title">
+      </mat-form-field>
+      <mat-form-field *ngIf="isDefendantPhys">
+        <mat-label>Дата рождения</mat-label>
+        <input
+          matInput
+          placeholder="Дата рождения"
+          [(ngModel)]="lawsuit.defendant.birthdate"
+          [matDatepicker]="pickerDefendantBirthdate"
+          (click)="pickerDefendantBirthdate.open()"
+        >
+        <mat-datepicker-toggle matIconSuffix [for]="pickerDefendantBirthdate"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDefendantBirthdate></mat-datepicker>
+        <!-- <input matInput [(ngModel)]="lawsuit.defendant.birthdate"> -->
+      </mat-form-field>
+      <mat-form-field *ngIf="isDefendantPhys">
+        <mat-label>Паспорт</mat-label>
+        <input matInput [(ngModel)]="lawsuit.defendant.passport">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>ИНН</mat-label>
+        <input matInput [(ngModel)]="lawsuit.defendant.INN">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>ОГРН</mat-label>
+        <input matInput [(ngModel)]="lawsuit.defendant.OGRN">
+      </mat-form-field>
+    </div>
+    <div *ngIf="lawsuit.defendant">
+      <mat-form-field style="flex: 1" >
+        <mat-label>Адрес</mat-label>
+        <input matInput [(ngModel)]="lawsuit.defendant.address">
+      </mat-form-field>
+    </div>
+</fieldset>
+
+<fieldset>
+  <legend> 
+    <h2>Участок</h2> 
+  </legend>
+  <div *ngIf="lawsuit.area">
+    <mat-form-field>
+      <mat-label>Номер</mat-label>
+      <input matInput [(ngModel)]="lawsuit.area.number">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Площадь</mat-label>
+      <input matInput [(ngModel)]="lawsuit.area.area">
+    </mat-form-field>
+    <mat-form-field style="flex: 1">
+      <mat-label>Адрес</mat-label>
+      <input matInput [(ngModel)]="lawsuit.area.address">
+    </mat-form-field>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend> 
+    <h2>Договор</h2> 
+  </legend>
+  <div *ngIf="lawsuit.contract">
+    <mat-form-field>
+      <mat-label>Дата</mat-label>
+      <input
+        matInput
+        [(ngModel)]="lawsuit.contract.date"
+        [matDatepicker]="pickerContractDate"
+        (click)="pickerContractDate.open()"
+      >
+      <mat-datepicker-toggle matIconSuffix [for]="pickerContractDate"></mat-datepicker-toggle>
+      <mat-datepicker #pickerContractDate></mat-datepicker>
+      <!-- <input matInput [(ngModel)]="lawsuit.contract.date"> -->
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Период</mat-label>
+      <input matInput [(ngModel)]="lawsuit.contract.period">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Номер</mat-label>
+      <input matInput [(ngModel)]="lawsuit.contract.number">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Сумма</mat-label>
+      <input matInput [(ngModel)]="lawsuit.contract.sum">
+    </mat-form-field>
+  </div>
+  <div *ngIf="lawsuit.contract">
+    <mat-form-field style="flex: 1">
+      <mat-label>Пункт об оплате</mat-label>
+      <input matInput [(ngModel)]="lawsuit.contract.paymentPoint">
+    </mat-form-field>
+  </div>
+  <div *ngIf="lawsuit.contract">
+    <mat-form-field style="flex: 1" >
+      <mat-label>Пункт о неустойке</mat-label>
+      <input matInput [(ngModel)]="lawsuit.contract.penaltyPoint">
+    </mat-form-field>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend> 
+    <h2>Претензия</h2> 
+  </legend>
+  <div *ngIf="lawsuit.pretension">
+    <mat-form-field>
+      <mat-label>Период просрочки</mat-label>
+      <input matInput [(ngModel)]="lawsuit.pretension.overduePeriod">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Задолженность</mat-label>
+      <input matInput [(ngModel)]="lawsuit.pretension.debt">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Пени</mat-label>
+      <input matInput [(ngModel)]="lawsuit.pretension.peny">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Неустойка</mat-label>
+      <input matInput [(ngModel)]="lawsuit.pretension.penalty">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Дата</mat-label>
+      <input
+        matInput
+        [(ngModel)]="lawsuit.pretension.date"
+        [matDatepicker]="pickerPretensionDate"
+        (click)="pickerPretensionDate.open()"
+      >
+      <mat-datepicker-toggle matIconSuffix [for]="pickerPretensionDate"></mat-datepicker-toggle>
+      <mat-datepicker #pickerPretensionDate></mat-datepicker>
+      <!-- <input matInput [(ngModel)]="lawsuit.pretension.date"> -->
+    </mat-form-field>
+  </div>
+  <div *ngIf="lawsuit.pretension">
+    <mat-form-field>
+      <mat-label>Дата отказа</mat-label>
+      <input
+        matInput
+        [(ngModel)]="lawsuit.pretension.refuseDate"
+        [matDatepicker]="pickerPretensionRefuseDate"
+        (click)="pickerPretensionRefuseDate.open()"
+      >
+      <mat-datepicker-toggle matIconSuffix [for]="pickerPretensionRefuseDate"></mat-datepicker-toggle>
+      <mat-datepicker #pickerPretensionRefuseDate></mat-datepicker>
+      <!-- <input matInput [(ngModel)]="lawsuit.pretension.refuseDate"> -->
+    </mat-form-field>
+    <mat-form-field style="flex: 1">
+      <mat-label>Причина отказа</mat-label>
+      <input matInput [(ngModel)]="lawsuit.pretension.refuseCause">
+    </mat-form-field>
+  </div>
+  <div *ngIf="lawsuit.pretension">
+    <mat-form-field>
+      <mat-label>Пошлина</mat-label>
+      <input matInput [(ngModel)]="lawsuit.pretension.due">
+    </mat-form-field>
+    <mat-form-field style="flex: 1">
+      <mat-label>Причина неправомерного отказа</mat-label>
+      <input matInput [(ngModel)]="lawsuit.pretension.unlawRefuseCase">
+    </mat-form-field>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend> 
+    <h2>Государственный орган</h2> 
+  </legend>
+  <div *ngIf="lawsuit.agency">
+    <mat-form-field style="flex: 1">
+      <mat-label>Регистрирующий Государственный орган</mat-label>
+      <input matInput [(ngModel)]="lawsuit.agency.registeringGovermentAgency">
+    </mat-form-field>
+  </div>
+    <div *ngIf="lawsuit.agency">
+    <mat-form-field>
+      <mat-label>Номер регистрации</mat-label>
+      <input matInput [(ngModel)]="lawsuit.agency.recordNumber">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Дата регистрации</mat-label>
+      <input
+        matInput
+        [(ngModel)]="lawsuit.agency.registryDate"
+        [matDatepicker]="pickerRegistryDate"
+        (click)="pickerRegistryDate.open()"
+      >
+      <mat-datepicker-toggle matIconSuffix [for]="pickerRegistryDate"></mat-datepicker-toggle>
+      <mat-datepicker #pickerRegistryDate></mat-datepicker>
+      <!-- <input matInput [(ngModel)]="lawsuit.agency.registryDate"> -->
+    </mat-form-field>
+  </div>
+</fieldset>
+
+  </div>
+
+  <div class="action-widget widget">
+    <button *ngIf="lawsuitValid" mat-flat-button color="primary" (click)="buildLawsuit()">
+      <img style="height: 30px; width: 30px" src="assets/doc.png" /> 
+      <div>
+        Сформировать исковое заявление
+      </div>
+    </button>
+  </div>
+</div>
+
+
+<div *ngIf="error" class="error-wrapper">
+  <div class="error-panel">
+    <div>
+      <h2>{{error?.header}}</h2>
+      <mat-icon (click)="closeError()"> close </mat-icon>
+    </div>
+    {{error?.message}}
+  </div>
+</div>

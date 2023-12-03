@@ -1,0 +1,30 @@
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>false</withJansi>
+    <encoder>
+      <pattern>%cyan(%d{HH:mm:ss.SSS}) %highlight(%-5level) %magenta(%logger{64}) - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="🐳 [postgres:14.6]" level="ERROR" />
+  <logger name="🐳 [confluentinc/cp-kafka:7.3.1]" level="ERROR" />
+  <logger name="application.testing.Postgres" level="ERROR" />
+  <logger name="application.testing.Kafka" level="ERROR" />
+  <logger name="org.springframework" level="ERROR" />
+  <logger name="org.apache.kafka" level="ERROR" />
+  <logger name="org.hibernate" level="ERROR" />
+  <logger name="com.zaxxer.hikari" level="ERROR" />
+  <logger name="org.testcontainers" level="ERROR" />
+  <logger name="liquibase" level="ERROR" />
+  <logger name="com.tngtech.archunit" level="ERROR" />
+  <logger name="com.github.dockerjava.zerodep" level="ERROR" />
+
+  <logger name="infrastructure" level="ERROR" />
+  <logger name="domain" level="TRACE" />
+  <logger name="application" level="TRACE" />
+  <logger name="adapters" level="TRACE" />
+
+  <root level="ERROR">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

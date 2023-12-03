@@ -1,0 +1,21 @@
+{
+  "type": "record",
+  "namespace": "team.microchad.api.messages",
+  "name": "ProductCreated",
+  "javaAnnotation": "javax.annotation.Generated(\"avro\")",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "logicalType": "uuid"
+    },
+    {
+      "name": "data",
+      "type": "team.microchad.api.messages.EventData"
+    },
+    {
+      "name": "payload",
+      "type": "team.microchad.api.messages.dto.ProductDto"
+    }
+  ]
+}

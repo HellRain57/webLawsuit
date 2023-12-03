@@ -1,0 +1,326 @@
+openapi: 3.0.3
+info:
+  title: OpenAPI definition
+  version: '1.0'
+  description: API for Product Core
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: product
+paths:
+#  /api/v1/contract:
+#    post:
+#      operationId: postContract
+#      description: Загрузка контракта
+#      requestBody:
+#        content:
+#          multipart/form-data:
+#            schema:
+#              type: string
+#              format: binary
+#      responses:
+#        200:
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/LawsuitDto'
+#          description: Ok
+#        401:
+#          $ref: '#/components/responses/401'
+#        403:
+#          $ref: '#/components/responses/403'
+#        404:
+#          $ref: '#/components/responses/404'
+#        500:
+#          $ref: '#/components/responses/500'
+#      tags:
+#        - documents
+#  /api/v1/claim:
+#    post:
+#      operationId: postClaim
+#      description: Загрузка претензии
+#      requestBody:
+#        content:
+#          multipart/form-data:
+#            schema:
+#              type: string
+#              format: binary
+#      responses:
+#        200:
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/LawsuitDto'
+#          description: Ok
+#        401:
+#          $ref: '#/components/responses/401'
+#        403:
+#          $ref: '#/components/responses/403'
+#        404:
+#          $ref: '#/components/responses/404'
+#        500:
+#          $ref: '#/components/responses/500'
+#      tags:
+#        - documents
+
+  /api/v1/lawsuit:
+    post:
+      operationId: generateDocument
+      description: Сгенерировать документ
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LawsuitDto'
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+      tags:
+        - documents
+
+components:
+  parameters:
+    ProductId:
+      schema:
+        type: string
+        format: uuid
+      name: productId
+      in: path
+      required: true
+  schemas:
+    PlaintiffDto:
+      title: PlaintiffDto
+      type: object
+      description: Истец
+      properties:
+        INN:
+          type: string
+        OGRN:
+          type: string
+        address:
+          type: string
+        KPP:
+          type: string
+        paymentAccount:
+          type: string
+        correspondentAccount:
+          type: string
+        bank:
+          type:
+            string
+        BIC:
+          type:
+            string
+        OKTMO:
+          type:
+            string
+        representative:
+          type:
+            string
+
+    DefendantDto:
+      title: DefendantDto
+      type: object
+      description: Ответчик
+      properties:
+        FIO:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        passport:
+          type: string
+        INN:
+          type: string
+        OGRN:
+          type: string
+        address:
+          type: string
+        title:
+          type: string
+
+    AreaDto:
+      title: AreaDto
+      type: object
+      description: Участок
+      properties:
+        number:
+          type: string
+        area:
+          type: number
+          format: float
+        address:
+          type: string
+
+    ContractDto:
+      title: ContractDto
+      type: object
+      description: Договор
+      properties:
+        date:
+          type: string
+          format: date
+        period:
+          type: string
+        paymentPoint:
+          type: string
+        number:
+          type: string
+        sum:
+          type: number
+          format: float
+        penaltyPoint:
+          type: string
+
+    PretensionDto:
+      title: PretensionDto
+      type: object
+      description: Претензия
+      properties:
+        overduePeriod:
+          type: string
+        debt:
+          type: string
+        peny:
+          type: number
+          format: float
+        penalty:
+          type: number
+          format: float
+        date:
+          type: string
+          format: date
+        refuseDate:
+          type: string
+          format: date
+        refuseCause:
+          type: string
+        unlawRefuseCase:
+          type: string
+        due:
+          type: number
+          format: float
+
+    GovermentAgencyDto:
+      title: GovermentAgencyDto
+      type: object
+      description: Гос орган
+      properties:
+        registeringGovermentAgency:
+          type: string
+        recordNumber:
+          type: string
+        registryDate:
+          type: string
+          format: date
+
+    RulesDto:
+      title: RulesDto
+      type: object
+      properties:
+        isRentPeriod:
+          type: boolean
+        isPeny:
+          type: boolean
+        shouldBeRegistred:
+          type: boolean
+        isLegal:
+          type: boolean
+        hasPretentionAnswer:
+          type: boolean
+
+    LawsuitDto:
+      title: LawsuitDto
+      type: object
+      properties:
+        plantiff:
+          $ref: '#/components/schemas/PlaintiffDto'
+        defendant:
+          $ref: '#/components/schemas/DefendantDto'
+        area:
+          $ref: '#/components/schemas/AreaDto'
+        contract:
+          $ref: '#/components/schemas/ContractDto'
+        pretension:
+          $ref: '#/components/schemas/PretensionDto'
+        agency:
+          $ref: '#/components/schemas/GovermentAgencyDto'
+        rules:
+          $ref: '#/components/schemas/RulesDto'
+
+    Response:
+      type: object
+      description: Request processing result
+      properties:
+        data:
+          type: object
+          description: Response data
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      description: Error information
+      required:
+        - description
+      properties:
+        description:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Error details
+  responses:
+    200:
+      description: OK
+    400:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    403:
+      description: Permission denied
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    404:
+      description: Not found
+    422:
+      description: Unprocessable entity
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'

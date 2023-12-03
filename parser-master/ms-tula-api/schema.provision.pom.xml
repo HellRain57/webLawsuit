@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>team.microchad</groupId>
+    <artifactId>tula</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>tula-avro-provisioning</artifactId>
+
+  <properties>
+    <schema.registry.url>http://localhost:8081</schema.registry.url>
+    <schema.path>${project.basedir}/src/main/resources/messages</schema.path>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.confluent</groupId>
+        <artifactId>kafka-schema-registry-maven-plugin</artifactId>
+        <version>7.3.3</version>
+        <configuration>
+          <compatibilityLevels>
+            <order>FORWARD_TRANSITIVE</order>
+          </compatibilityLevels>
+          <schemaRegistryUrls>
+            <param>${schema.registry.url}</param>
+          </schemaRegistryUrls>
+          <!-- Subject definitions -->
+          <subjects>
+            <team.microchad.profile.api.messages.EventData>${schema.path}/EventData.avsc</team.microchad.profile.api.messages.EventData>
+
+            <team.microchad.profile.api.messages.dto.ProductDto>${schema.path}/ProductDto.avsc</team.microchad.profile.api.messages.dto.ProductDto>
+
+            <team.microchad.profile.api.messages.ProductCreated>${schema.path}/ProductCreated.avsc</team.microchad.profile.api.messages.ProductCreated>
+          </subjects>
+          <schemaTypes>
+            <team.microchad.profile.api.messages.EventData>AVRO</team.microchad.profile.api.messages.EventData>
+
+            <team.microchad.profile.api.messages.dto.ProductDto>AVRO</team.microchad.profile.api.messages.dto.ProductDto>
+
+            <team.microchad.profile.api.messages.ProductCreated>AVRO</team.microchad.profile.api.messages.ProductCreated>
+          </schemaTypes>
+          <!-- Dependency mapping -->
+          <references>
+            <team.microchad.profile.api.messages.ProductCreated>
+              <reference>
+                <name>team.microchad.profile.api.messages.EventData</name>
+                <subject>team.microchad.profile.api.messages.EventData</subject>
+              </reference>
+              <reference>
+                <name>team.microchad.profile.api.messages.dto.ProductDto</name>
+                <subject>team.microchad.profile.api.messages.dto.ProductDto</subject>
+              </reference>
+            </team.microchad.profile.api.messages.ProductCreated>
+          </references>
+        </configuration>
+        <goals>
+          <goal>register</goal>
+        </goals>
+      </plugin>
+    </plugins>
+  </build>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>confluent</id>
+      <name>Confluent</name>
+      <url>https://packages.confluent.io/maven/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>team.microchad</groupId>
+    <artifactId>ms-tula</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>ms-tula-db</artifactId>
+  <version>${parent.version}</version>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <database.driver>org.postgresql.Driver</database.driver>
+    <database.url>jdbc:postgresql://localhost:5432/tula</database.url>
+    <database.user>admin</database.user>
+    <database.password>password</database.password>
+    <liquibase-maven-plugin.version>4.17.1</liquibase-maven-plugin.version>
+  </properties>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>liquibase</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.liquibase</groupId>
+          <artifactId>liquibase-maven-plugin</artifactId>
+          <version>${liquibase-maven-plugin.version}</version>
+          <configuration>
+            <changeLogFile>liquibase/changelog/changelog.xml</changeLogFile>
+            <driver>${database.driver}</driver>
+            <url>${database.url}</url>
+            <username>${database.user}</username>
+            <password>${database.password}</password>
+            <contexts>default</contexts>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.postgresql</groupId>
+              <artifactId>postgresql</artifactId>
+              <version>${postgresql.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

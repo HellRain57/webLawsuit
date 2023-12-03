@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>team.microchad</groupId>
+    <artifactId>ms-tula</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>ms-tula-api</artifactId>
+  <version>${parent.version}</version>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${maven-openapi-generator-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <!-- https://openapi-generator.tech/docs/generators/spring/ -->
+              <inputSpec>${project.basedir}/src/main/resources/API.yaml</inputSpec>
+              <generatorName>spring</generatorName>
+              <apiPackage>team.microchad.api</apiPackage>
+              <modelPackage>team.microchad.api.dto</modelPackage>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <configOptions>
+                <annotationLibrary>none</annotationLibrary>
+                <interfaceOnly>true</interfaceOnly>
+                <sourceFolder>openapi</sourceFolder>
+                <documentationProvider>source</documentationProvider>
+                <serializableModel>true</serializableModel>
+                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                <useTags>true</useTags>
+                <skipDefaultInterface>true</skipDefaultInterface>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <typeMappings>
+            <typeMapping>string+json=JsonNode</typeMapping>
+          </typeMappings>
+          <importMappings>JsonNode=com.fasterxml.jackson.databind.JsonNode</importMappings>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro-maven-plugin</artifactId>
+        <version>${avro.version}</version>
+        <executions>
+          <execution>
+            <id>generate-avro-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>schema</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <sourceDirectory>src/main/resources/messages</sourceDirectory>
+          <!-- Converting CharSequence to Strings -->
+          <stringType>String</stringType>
+          <!-- Defining custom logical type and conversions -->
+          <customConversions>org.apache.avro.Conversions$UUIDConversion</customConversions>
+          <!-- Linking schemas. Order matters -->
+          <imports>
+            <import>${project.basedir}/src/main/resources/messages/EventData.avsc</import>
+
+            <import>${project.basedir}/src/main/resources/messages/ProductDto.avsc</import>
+            <import>${project.basedir}/src/main/resources/messages/ProductCreated.avsc</import>
+          </imports>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.parser.v3</groupId>
+      <artifactId>swagger-parser-v3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-csv</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

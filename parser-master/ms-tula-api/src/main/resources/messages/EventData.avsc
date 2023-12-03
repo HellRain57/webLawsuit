@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "namespace": "team.microchad.api.messages",
+  "name": "EventData",
+  "doc": "Информация о событии в системе",
+  "fields": [
+    {
+      "name": "publishedAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Дата и время события"
+    }
+  ]
+}
